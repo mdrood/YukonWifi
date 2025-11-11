@@ -8,12 +8,14 @@
 const char* ssid = "ESP32-AP";
 const char* password = "12345678";
 
-bool wifiLock = false;
-bool wifiUnlock = false;
+
 bool wifiRunning = false;
 int LOCK = 5;
 int UNLOCK = 18;
 bool onbardPinOn = false;
+//int wifiPowerInput = -80;  // TODO get this value from wifi esp32
+int wifiLock = false;
+int wifiUnlock = false;
 
 const byte DNS_PORT = 53;
 DNSServer dnsServer;
@@ -158,6 +160,8 @@ void setup() {
     return;
   }
   loadInputValue();
+
+  Serial2.begin(9600, SERIAL_8N1, 16, 17); // RX=16, TX=17
 }
 
 void loop(){
@@ -172,6 +176,10 @@ void loop(){
     onbardPinOn = true;
      Serial.print("");
  }
+ String message = String(inputValue) + "," + String(wifiLock) + "," + String(wifiUnlock);
+
+  Serial2.println(message);  // Send to other ESP32
+  Serial.println("Sent: " + message);
 }
 
 void loadInputValue() {
