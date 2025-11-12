@@ -10,12 +10,12 @@ const char* password = "12345678";
 
 
 bool wifiRunning = false;
-int LOCK = 5;
-int UNLOCK = 18;
+String message = "";
+
 bool onbardPinOn = false;
 //int wifiPowerInput = -80;  // TODO get this value from wifi esp32
-int wifiLock = false;
-int wifiUnlock = false;
+int wifiLock = 0;
+int wifiUnlock = 0;
 
 const byte DNS_PORT = 53;
 DNSServer dnsServer;
@@ -105,22 +105,22 @@ void handleSetInput() {
 void handleSwitch1() {
   Serial.println("Switch 1 pressed!");
   server.send(200, "text/plain", "Switch 1 triggered");
-  digitalWrite(LOCK,HIGH);
-  delay(500);
-  digitalWrite(LOCK, LOW);
+  wifiLock = 1;
+  wifiUnlock = 0;
   Serial.println("LOOOOOOOOOOOOOOOOOOOOcked");
 }
 
 void handleSwitch2() {
   Serial.println("Switch 2 pressed!");
   server.send(200, "text/plain", "Switch 2 triggered");
-    digitalWrite(UNLOCK,HIGH);
-  delay(500);
-  digitalWrite(UNLOCK, LOW);
+    wifiUnlock = 1;
+    wifiLock = 0;
+
   Serial.println("UUUUUUUUUUUUUUUUUUnlock");
 }
 
 void setup() {
+  Serial.begin(115200);
     WiFi.disconnect(true, true);
   WiFi.mode(WIFI_OFF);
   delay(500);
@@ -176,10 +176,12 @@ void loop(){
     onbardPinOn = true;
      Serial.print("");
  }
- String message = String(inputValue) + "," + String(wifiLock) + "," + String(wifiUnlock);
+ //String message = "1,2,3";
+ message = String(inputValue) + "," + String(wifiLock) + "," + String(wifiUnlock);
 
   Serial2.println(message);  // Send to other ESP32
   Serial.println("Sent: " + message);
+  delay(100);
 }
 
 void loadInputValue() {
